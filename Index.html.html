@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prediksi Harga Mobil Bekas</title>
+  <style>
+    :root {
+      --primary: #E17055;
+      --primary-hover: #D63031;
+      --primary-gradient: linear-gradient(135deg, #FF7675 0%, #D63031 100%);
+      --accent-light: #FFF0ED;
+      --bg: #FFF8F6;
+      --surface: #FFFFFF;
+      --text: #2D3748;
+      --text-muted: #718096;
+      --border: #FEEBC8;
+      --border-light: #F1D3CF;
+      --success: #27AE60;
+      --radius: 14px;
+      --shadow: 0 10px 25px -5px rgba(225, 112, 85, 0.1), 0 8px 10px -6px rgba(225, 112, 85, 0.05);
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+    .hidden { display: none !important; }
+    .w-100 { width: 100%; }
+    .mt-2 { margin-top: 0.75rem; }
+    .mt-4 { margin-top: 1.5rem; }
+    .text-muted { color: var(--text-muted); font-size: 13px; }
+    .text-center { text-align: center; }
+
+    .app-layout { display: flex; min-height: 100vh; }
+
+    /* Sidebar Merah Pastel & Dinamis */
+    .sidebar { width: 300px; background: var(--surface); border-right: 1px solid var(--border-light); display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; box-shadow: 4px 0 20px rgba(225,112,85,0.04); z-index: 10; }
+    .sidebar-header { padding: 1.8rem 1.5rem; border-bottom: 1px solid #F7EBE8; background: linear-gradient(to bottom, #FFFFFF, #FFF9F8); }
+
+    .brand-container { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+
+    /* Logo Mobil 3D Besar */
+    .logo-3d-wrapper {
+      background: var(--primary-gradient);
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(214, 48, 49, 0.3), inset 0 2px 3px rgba(255,255,255,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: perspective(500px) rotateY(-5deg);
+      transition: transform 0.3s ease;
+    }
+    .logo-3d-wrapper:hover { transform: perspective(500px) rotateY(0deg) scale(1.05); }
+    .car-logo-3d { width: 36px; height: 36px; color: #FFFFFF; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+
+    .sidebar-header h3 { color: #2D3748; font-size: 1.05rem; font-weight: 700; line-height: 1.3; }
+    .brand-author { font-size: 12px; color: var(--primary); padding-left: 50px; font-weight: 600; letter-spacing: 0.3px; }
+
+    .sidebar-nav { padding: 1.5rem 1rem; display: flex; flex-direction: column; gap: 0.6rem; flex-grow: 1; }
+    .nav-item { background: transparent; border: none; text-align: left; padding: 0.9rem 1.2rem; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--text-muted); transition: all 0.25s ease; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+    .nav-item:hover { background: var(--accent-light); color: var(--primary); transform: translateX(4px); }
+    .nav-item.active { background: var(--primary-gradient); color: white; box-shadow: 0 4px 12px rgba(214, 48, 49, 0.25); }
+
+    .sidebar-footer-info { padding: 1.2rem 1.5rem; border-top: 1px solid #F7EBE8; }
+    .badge-status { font-size: 11px; background: #E8F8F0; color: var(--success); padding: 6px 12px; border-radius: 20px; font-weight: 700; display: inline-block; }
+
+    /* Main Content */
+    .main-content { margin-left: 300px; flex-grow: 1; padding: 2.5rem 3rem; max-width: calc(100vw - 300px); }
+    .section-header h2 { font-size: 1.6rem; font-weight: 700; color: #1A202C; }
+
+    .kartu { background: var(--surface); border: 1px solid #F2DCD9; border-radius: var(--radius); padding: 2.2rem; box-shadow: var(--shadow); }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .form-group { margin-bottom: 0.2rem; }
+    .form-group.full-width { grid-column: span 2; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 13px; color: #4A5568; }
+    .form-control { width: 100%; padding: 0.85rem 1rem; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 14px; outline: none; background: #FAFAFA; transition: all 0.2s; }
+    .form-control:focus { border-color: var(--primary); background: #FFFFFF; box-shadow: 0 0 0 4px rgba(225, 112, 85, 0.12); }
+
+    .tombol-utama { background: var(--primary-gradient); color: white; border: none; padding: 1rem 1.5rem; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 15px; transition: all 0.25s ease; box-shadow: 0 4px 15px rgba(214, 48, 49, 0.3); letter-spacing: 0.3px; }
+    .tombol-utama:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(214, 48, 49, 0.4); opacity: 0.95; }
+
+    .kartu-hasil { background: linear-gradient(135deg, #FFF9F8 0%, #FFF0EE 100%); border: 2px dashed #F5B0A9; border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow-sm); }
+    .badge-result { background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .harga-text { color: var(--success); font-size: 2.6rem; margin-top: 0.3rem; font-weight: 800; text-shadow: 0 2px 4px rgba(39, 174, 96, 0.1); }
+
+    /* Tabel Riwayat */
+    .table-responsive { overflow-x: auto; }
+    .tabel { width: 100%; border-collapse: collapse; text-align: left; }
+    .tabel th, .tabel td { padding: 1rem; border-bottom: 1px solid #EDF2F7; }
+    .tabel th { font-weight: 700; color: var(--text-muted); background: #FAF5F4; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .tabel td { font-size: 13px; color: #2D3748; }
+    .tabel tbody tr:hover { background-color: #FFF9F8; }
+
+    .toast { position: fixed; bottom: 25px; right: 25px; background: #2D3748; color: white; padding: 1rem 1.8rem; border-radius: 10px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-container">
+          <div class="logo-3d-wrapper">
+            <svg class="car-logo-3d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2.8-4.2C14.7 5.2 14 5 13.2 5H10.8c-.8 0-1.5.2-2 .8L6 10l-2.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"></path>
+              <circle cx="7" cy="17" r="2.5" fill="#FFF"></circle>
+              <circle cx="17" cy="17" r="2.5" fill="#FFF"></circle>
+              <path d="M5 13h14" stroke-dasharray="1 2"></path>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h3>Prediksi Harga Mobil Bekas</h3>
+          </div>
+        </div>
+        <p class="brand-author">Bye Adelia Pandina</p>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-item active" onclick="bukaMenu('menu-prediksi', this)">
+          <span class="nav-icon">📊</span> Form Prediksi
+        </button>
+        <button class="nav-item" onclick="bukaMenu('menu-riwayat', this)">
+          <span class="nav-icon">📜</span> Riwayat Prediksi
+        </button>
+      </nav>
+      
+      <div class="sidebar-footer-info">
+        <div class="badge-status">● Sistem AI Aktif</div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <!-- Menu 1: Form Prediksi -->
+      <section id="menu-prediksi" class="menu-section">
+        <div class="section-header">
+          <h2>Estimasi Harga Pasaran Mobil</h2>
+          <p class="text-muted">Masukkan spesifikasi kendaraan dengan akurat untuk mendapatkan hasil prediksi harga terbaik.</p>
+        </div>
+        
+        <div class="kartu mt-4">
+          <form id="form-prediksi" onsubmit="jalankanPrediksi(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Merek & Model Mobil</label>
+                <input type="text" id="merek" class="form-control" required placeholder="Contoh: Toyota Avanza 1.3 G">
+              </div>
+              <div class="form-group">
+                <label>Tahun Pembuatan</label>
+                <input type="number" id="tahun" class="form-control" required placeholder="Contoh: 2021" min="1990" max="2026">
+              </div>
+              <div class="form-group">
+                <label>Kilometer (KM) Telah Ditempuh</label>
+                <input type="number" id="km" class="form-control" required placeholder="Contoh: 45000">
+              </div>
+              <div class="form-group">
+                <label>Jenis Transmisi</label>
+                <select id="transmisi" class="form-control" required>
+                  <option value="Manual">Manual</option>
+                  <option value="Automatic">Automatic</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label>Kapasitas Mesin (CC)</label>
+                <input type="number" id="cc" class="form-control" required placeholder="Contoh: 1500">
+              </div>
+            </div>
+            <button type="submit" id="btn-prediksi" class="tombol-utama w-100 mt-2">Hitung Estimasi Harga Sekarang 🚀</button>
+          </form>
+        </div>
+
+        <div id="hasil-box" class="kartu-hasil mt-4 hidden text-center">
+          <span class="badge-result">Hasil Analisis Model</span>
+          <h3 class="text-muted mt-2">Estimasi Harga Pasaran Kendaraan:</h3>
+          <h1 id="res-harga" class="harga-text">Rp 0</h1>
+          <p class="text-muted mt-1">✨ Data telah berhasil dihitung dan dicatat otomatis ke riwayat.</p>
+        </div>
+      </section>
+
+      <!-- Menu 2: Riwayat -->
+      <section id="menu-riwayat" class="menu-section hidden">
+        <div class="section-header">
+          <h2>Riwayat Prediksi Harga</h2>
+          <p class="text-muted">Daftar kendaraan yang pernah dianalisis harganya di sistem.</p>
+        </div>
+        <div class="kartu mt-4">
+          <div class="table-responsive">
+            <table class="tabel" id="tabel-riwayat">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Waktu</th>
+                  <th>Merek/Model</th>
+                  <th>Tahun</th>
+                  <th>KM</th>
+                  <th>Transmisi</th>
+                  <th>CC</th>
+                  <th>Estimasi Harga</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="8" class="text-center text-muted">Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- SCRIPT CLIENT -->
+  <script>
+    function bukaMenu(menuId, el) {
+      document.querySelectorAll('.menu-section').forEach(sec => sec.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(menuId).classList.remove('hidden');
+      el.classList.add('active');
+      
+      if (menuId === 'menu-riwayat') {
+        muatRiwayat();
+      }
+    }
+
+    function tampilkanToast(pesan) {
+      const toast = document.getElementById('toast');
+      toast.innerText = pesan;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3500);
+    }
+
+    function jalankanPrediksi(e) {
+      e.preventDefault();
+      
+      const payload = {
+        merek: document.getElementById('merek').value,
+        tahun: document.getElementById('tahun').value,
+        km: document.getElementById('km').value,
+        transmisi: document.getElementById('transmisi').value,
+        cc: document.getElementById('cc').value
+      };
+
+      const btn = document.getElementById('btn-prediksi');
+      btn.disabled = true;
+      btn.innerText = "⏳ Menganalisis Spesifikasi...";
+
+      google.script.run
+        .withSuccessHandler(res => {
+          btn.disabled = false;
+          btn.innerText = "Hitung Estimasi Harga Sekarang 🚀";
+          if (res.ok) {
+            document.getElementById('res-harga').innerText = "Rp " + res.harga.toLocaleString("id-ID");
+            document.getElementById('hasil-box').classList.remove('hidden');
+            tampilkanToast("✅ Prediksi berhasil dihitung & tersimpan!");
+          } else {
+            tampilkanToast("❌ Gagal: " + res.pesan);
+          }
+        })
+        .withFailureHandler(err => {
+          btn.disabled = false;
+          btn.innerText = "Hitung Estimasi Harga Sekarang 🚀";
+          tampilkanToast("❌ Error sistem: " + err.message);
+        })
+        .hitungPrediksiHarga(payload);
+    }
+
+    function muatRiwayat() {
+      const tbody = document.querySelector('#tabel-riwayat tbody');
+      if (!tbody) return;
+      
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding: 2rem;">Sedang memuat data riwayat dari spreadsheet...</td></tr>`;
+
+      google.script.run
+        .withSuccessHandler(data => {
+          if (!data || data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted" style="padding: 2rem;">Belum ada riwayat prediksi tersimpan di spreadsheet.</td></tr>`;
+            return;
+          }
+          
+          tbody.innerHTML = data.map(row => `
+            <tr>
+              <td><code>${row[0]}</code></td>
+              <td>${row[1]}</td>
+              <td><b>${row[2]}</b></td>
+              <td>${row[3]}</td>
+              <td>${isNaN(row[4]) ? row[4] : parseInt(row[4]).toLocaleString("id-ID")} KM</td>
+              <td>${row[5]}</td>
+              <td>${row[6]} CC</td>
+              <td><b style="color: var(--success);">${row[7]}</b></td>
+            </tr>
+          `).join('');
+        })
+        .withFailureHandler(err => {
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="color: red; padding: 2rem;">Gagal memuat riwayat: ${err.message}</td></tr>`;
+        })
+        .getRiwayatPrediksi();
+    }
+  </script>
+</body>
+</html>

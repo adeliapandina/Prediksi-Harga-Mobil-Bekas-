@@ -1,0 +1,83 @@
+const CONFIG = {
+  SHEET_PREDIKSI: "RiwayatPrediksiHargaMobil",
+  HEADERS_PREDIKSI: ["ID", "Waktu", "MerekModel", "Tahun", "KM", "Transmisi", "CC", "EstimasiHarga"]
+};
+
+function setupDatabase() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(CONFIG.SHEET_PREDIKSI);
+  if (!sheet) {
+    sheet = ss.insertSheet(CONFIG.SHEET_PREDIKSI);
+    sheet.appendRow(CONFIG.HEADERS_PREDIKSI);
+  }
+  return sheet;
+}
+
+function hitungPrediksiHarga(data) {
+  try {
+    let baseHarga = 120000000;
+    let umur = 2026 - parseInt(data.tahun);
+    baseHarga -= (umur * 6500000);
+    let kmInt = parseInt(data.km);
+    baseHarga -= (kmInt * 400);
+    if (data.transmisi === "Automatic") {
+      baseHarga += 15000000;
+    }
+    let ccInt = parseInt(data.cc);
+    baseHarga += (ccInt * 12000);
+
+    let estimasi = Math.max(baseHarga, 35000000);
+    simpanLogPrediksi(data, estimasi);
+
+    return { ok: true, harga: estimasi };
+  } catch (err) {
+    return { ok: false, pesan: err.toString() };
+  }
+}
+
+function simpanLogPrediksi(data, estimasi) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(CONFIG.SHEET_PREDIKSI);
+  if (!sheet) {
+    sheet = setupDatabase();
+  }
+  
+  const id = "CAR-" + Utilities.formatDate(new Date(), "Asia/Jakarta", "yyyyMMddHHmmss");
+  const waktu = Utilities.formatDate(new Date(), "Asia/Jakarta", "yyyy-MM-dd HH:mm:ss");
+  
+  sheet.appendRow([
+    id, 
+    waktu, 
+    data.merek, 
+    data.tahun, 
+    data.km, 
+    data.transmisi, 
+    data.cc, 
+    "Rp " + estimasi.toLocaleString("id-ID")
+  ]);
+}
+
+function getRiwayatPrediksi() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(CONFIG.SHEET_PREDIKSI);
+  if (!sheet) return [];
+  
+  let lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return [];
+  
+  let data = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues();
+  let filteredData = data.filter(row => row[0] !== "" && row[0] !== null);
+  
+  return filteredData.reverse();
+}
+
+function doGet() {
+  setupDatabase();
+  return HtmlService.createTemplateFromFile('Index').evaluate()
+    .setTitle("Prediksi Harga Mobil Bekas")
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
